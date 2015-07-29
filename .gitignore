@@ -1,0 +1,4 @@
+/config
+/src/pencil_kernels_opt.c
+/src/pencil_kernels_opt_host.c
+/src/pencil_kernels_opt_kernel.cl

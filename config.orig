@@ -23,7 +23,7 @@ ARCH=
 
 OPENCL_SDK=
 
-# Path to the SLAMBench_R0rc1 folder
+# Path to the SLAMBench_1_1 folder
 
 SLAMBENCH_DIR=
 
