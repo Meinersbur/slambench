@@ -18,11 +18,6 @@ if [ -z "$PATH_TO_REPO" ]; then
     exit 1
 fi
 
-if [ -z "$PENCIL_TOOLS_HOME" ]; then
-    echo "Error: Need to set PENCIL_TOOLS_HOME"
-    exit 1
-fi
-
 if [ -z "$PENCIL_UTIL_HOME" ]; then
     echo "Error: Need to set PENCIL_UTIL_HOME"
     exit 1
@@ -38,15 +33,27 @@ if [ -z "$PRL_PATH" ]; then
     exit 1
 fi
 
+if [ -z "$PRL_SRC_PATH" ]; then
+    echo "Error: Need to set PRL_SRC_PATH"
+    exit 1
+fi
+
 echo "Applying patch to SLAMBench."
 cd ${SLAMBENCH_DIR}
-patch -p1 < ${PATH_TO_REPO}/patches/0001-Enable-PENCIL-OpenCL-benchmark.patch
+#patch -p1 < ${PATH_TO_REPO}/patches/0001-Enable-PENCIL-OpenCL-benchmark.patch
 
 echo "Running Pencil Optimizer and PPCG..."
 cd ${PATH_TO_REPO}
-make -C src ppcg
+make -C src ppcg V=1
 echo "PPCG run completed. host and kernel.cl files generated."
 
 echo "Copying generated pencil sources to SLAMBench, and building pencil executable"
-make -C src build
+make -C src build V=1
 echo "SLAMBench Pencil build successful. You may now run the SLAMBench Pencil benchmark as described in README.txt"
+
+if [ $# -ne 0 ]; then
+  echo "running..."
+  cd ${SLAMBENCH_DIR}
+  LD_LIBRARY_PATH="${PRL_PATH}/src/.libs" ./build/kfusion/kfusion-benchmark-pencilCL "$@"
+  echo "Exit"
+fi

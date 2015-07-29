@@ -34,11 +34,11 @@ extern "C" {
 
 	int renderNormal_pencil(uint normalSize_x, uint normalSize_y, uchar3 *out, const float3 *normal);
 
-	int renderDepth_pencil(uint depthSize_x, uint depthSize_y, uchar3 *out, const float *depth, const float nearPlane, const float farPlane);
+	int renderDepth_pencil(uint depthSize_x, uint depthSize_y, uchar4 *out, const float *depth, const float nearPlane, const float farPlane);
 
-	int renderTrack_pencil(uint outSize_x, uint outSize_y, uchar3 *out, const TrackData *data);
+	int renderTrack_pencil(uint outSize_x, uint outSize_y, uchar4 *out, const TrackData *data);
 
-	int renderVolume_pencil(uint depthSize_x, uint depthSize_y, uchar3 *out, const uint volume_size_x, const uint volume_size_y, const uint volume_size_z,
+	int renderVolume_pencil(uint depthSize_x, uint depthSize_y, uchar4 *out, const uint volume_size_x, const uint volume_size_y, const uint volume_size_z,
 	                        const short2 *volume_data, const float3 volume_dim, const Matrix4 view, const float nearPlane, const float farPlane,
 	                        const float step, const float largestep, const float3 light, const float3 ambient);
 
@@ -73,7 +73,7 @@ void Kfusion::languageSpecificConstructor()
 	if (getenv("KERNEL_TIMINGS"))
 		print_kernel_timing = true;
 
-	prl_init(PRL_TARGET_DEVICE_DYNAMIC);
+	prl_init();
 
 	// internal buffers to initialize
 	size_t reductionoutput_size = sizeof(float) * 8 * 32;
@@ -139,7 +139,7 @@ Kfusion::~Kfusion()
 	prl_free(floatDepth);
 	prl_free(trackingResult);
 
-	prl_shutdown();
+	prl_release();
 
 	volume.release();
 }
@@ -292,7 +292,7 @@ void renderNormalKernel(uchar3* out, const float3* normal, uint2 normalSize)
 	TOCK("renderNormalKernel", normalSize.x * normalSize.y);
 }
 
-void renderDepthKernel(uchar3* out, float * depth, uint2 depthSize,
+void renderDepthKernel(uchar4* out, float * depth, uint2 depthSize,
                        const float nearPlane, const float farPlane)
 {
 	TICK();
@@ -300,14 +300,14 @@ void renderDepthKernel(uchar3* out, float * depth, uint2 depthSize,
 	TOCK("renderDepthKernel", depthSize.x * depthSize.y);
 }
 
-void renderTrackKernel(uchar3* out, const TrackData* data, uint2 outSize)
+void renderTrackKernel(uchar4* out, const TrackData* data, uint2 outSize)
 {
 	TICK();
 	renderTrack_pencil(outSize.x, outSize.y, out, data);
 	TOCK("renderTrackKernel", outSize.x * outSize.y);
 }
 
-void renderVolumeKernel(uchar3* out, const uint2 depthSize,
+void renderVolumeKernel(uchar4* out, const uint2 depthSize,
                         const Volume volume, const Matrix4 view,
                         const float nearPlane, const float farPlane,
                         const float step, const float largestep,
@@ -441,9 +441,8 @@ void Kfusion::dumpVolume(std::string filename)
 	fDumpFile.close();
 }
 
-void Kfusion::renderVolume(uchar3 * out, uint2 outputSize, int frame,
-                           int raycast_rendering_rate, float4 k,
-                           float largestep)
+void Kfusion::renderVolume(uchar4 * out, uint2 outputSize, int frame,
+		int raycast_rendering_rate, float4 k, float largestep)
 {
 	if (frame % raycast_rendering_rate == 0)
 		renderVolumeKernel(out, outputSize, volume,
@@ -451,12 +450,12 @@ void Kfusion::renderVolume(uchar3 * out, uint2 outputSize, int frame,
 		                   farPlane * 2.0f, step, largestep, light, ambient);
 }
 
-void Kfusion::renderTrack(uchar3 * out, uint2 outputSize)
+void Kfusion::renderTrack(uchar4 * out, uint2 outputSize)
 {
 	renderTrackKernel(out, trackingResult, outputSize);
 }
 
-void Kfusion::renderDepth(uchar3 * out, uint2 outputSize)
+void Kfusion::renderDepth(uchar4 * out, uint2 outputSize)
 {
 	renderDepthKernel(out, floatDepth, outputSize, nearPlane, farPlane);
 }

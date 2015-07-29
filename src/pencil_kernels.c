@@ -21,6 +21,13 @@ struct uchar3 {
 	unsigned char z;
 };
 
+struct uchar4 {
+	unsigned char x;
+	unsigned char y;
+	unsigned char z;
+	unsigned char w;
+};
+
 struct short2 {
 	short x;
 	short y;
@@ -49,6 +56,7 @@ struct TrackData {
 typedef struct float3 float3;
 typedef struct float4 float4;
 typedef struct uchar3 uchar3;
+typedef struct uchar4 uchar4;
 typedef struct short2 short2;
 typedef struct float2 float2;
 typedef struct uint2 uint2;
@@ -197,7 +205,7 @@ void renderDepth_core_summary(const uint x, const uint y,
 	const float d = depth[y][x];
 }
 
-uchar3 renderDepth_core(const uint x, const uint y,
+uchar4 renderDepth_core(const uint x, const uint y,
                         const uint depthSize_x, const uint depthSize_y,
                         const float depth[restrict const static depthSize_y][depthSize_x],
                         const float nearPlane, const float farPlane,
@@ -211,7 +219,7 @@ void renderTrack_core_summary(const uint x, const uint y,
 	int test = data[y][x].result;
 }
 
-uchar3 renderTrack_core(const uint x, const uint y,
+uchar4 renderTrack_core(const uint x, const uint y,
                         const uint outSize_x, const uint outSize_y,
                         const TrackData data[restrict const static outSize_y][outSize_x])
        __attribute__((pencil_access(renderTrack_core_summary)));
@@ -227,7 +235,7 @@ void renderVolume_core_summary(const uint x, const uint y,
 	const short2 d = volume_data[x+y][y][x];
 }
 
-uchar3 renderVolume_core(const uint x, const uint y,
+uchar4 renderVolume_core(const uint x, const uint y,
                          const uint volume_size_x, const uint volume_size_y, const uint volume_size_z,
                          const short2 volume_data[restrict const static volume_size_z][volume_size_y][volume_size_x],
                          const float3 volume_dim, const Matrix4 view,
@@ -517,7 +525,7 @@ int renderNormal_pencil(uint normalSize_x, uint normalSize_y,
 }
 
 int renderDepth_pencil(uint depthSize_x, uint depthSize_y,
-					   uchar3 out[restrict const static depthSize_y][depthSize_x],
+					   uchar4 out[restrict const static depthSize_y][depthSize_x],
 					   const float depth[restrict const static depthSize_y][depthSize_x],
 					   const float nearPlane, const float farPlane)
 {
@@ -542,7 +550,7 @@ int renderDepth_pencil(uint depthSize_x, uint depthSize_y,
 }
 
 int renderTrack_pencil(uint outSize_x, uint outSize_y,
-					   uchar3 out[restrict const static outSize_y][outSize_x],
+					   uchar4 out[restrict const static outSize_y][outSize_x],
 					   const TrackData data[restrict const static outSize_y][outSize_x])
 {
 #pragma scop
@@ -564,7 +572,7 @@ int renderTrack_pencil(uint outSize_x, uint outSize_y,
 }
 
 int renderVolume_pencil(uint depthSize_x, uint depthSize_y,
-						uchar3 out[restrict const static depthSize_y][depthSize_x],
+						uchar4 out[restrict const static depthSize_y][depthSize_x],
 						const uint volume_size_x, const uint volume_size_y, const uint volume_size_z,
 						const short2 volume_data[restrict const static volume_size_z][volume_size_y][volume_size_x],
 						const float3 volume_dim, const Matrix4 view,

@@ -1,7 +1,11 @@
 # SLAMBENCH Configuration
-# Path to PRL library (libprl.so)
+# Path to PRL library (working directory of configure)
 
 PRL_PATH=
+
+# Path to PRL library (where the include directory is)
+
+PRL_SRC_PATH=
 
 # Path to PPCG
 
@@ -10,10 +14,6 @@ PPCG_PATH=
 # Path to pencil-driver build, containing include/pencil.h
 
 PENCIL_UTIL_HOME=
-
-# Path to pencil-optimizer
-
-PENCIL_TOOLS_HOME=
 
 # Compiler toolchain prefix
 
