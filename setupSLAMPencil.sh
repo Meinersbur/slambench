@@ -40,7 +40,7 @@ fi
 
 echo "Applying patch to SLAMBench."
 cd ${SLAMBENCH_DIR}
-#patch -p1 < ${PATH_TO_REPO}/patches/0001-Enable-PENCIL-OpenCL-benchmark.patch
+patch -p1 < ${PATH_TO_REPO}/patches/0001-Enable-PENCIL-OpenCL-benchmark.patch
 
 echo "Running Pencil Optimizer and PPCG..."
 cd ${PATH_TO_REPO}

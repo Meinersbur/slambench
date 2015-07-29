@@ -37,7 +37,6 @@ pencil_kernels_opt.c: pencil_kernels.c
 
 export PPCG_SIZES
 ppcg: pencil_kernels_opt.c
-	echo "$${PPCG_SIZES}"
 	${PPCG_PATH}/ppcg ${PPCG_BASE_OPTIONS} --sizes="{$${PPCG_SIZES}}" $<
 
 export PENCIL_UTIL_HOME
