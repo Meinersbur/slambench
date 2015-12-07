@@ -33,12 +33,14 @@ set(common_compile_flags "")
 
  # ----------------- CPP VERSION ----------------- 
 
+message(STATUS "Adding a plain C++ version")
 add_library(${appname}-cpp  src/cpp/kernels.cpp)
 target_link_libraries(${appname}-cpp   ${common_libraries})	
 add_version(${appname} cpp "" "")
 
  # ----------------- OPENMP VERSION ----------------- 
 
+message(STATUS "Compiling an OpenMP version")
 add_library(${appname}-openmp  src/cpp/kernels.cpp)
 target_link_libraries(${appname}-openmp   ${common_libraries})	
 SET_TARGET_PROPERTIES(${appname}-openmp PROPERTIES COMPILE_FLAGS "-fopenmp")
@@ -48,6 +50,8 @@ add_version(${appname} openmp "-fopenmp" "-fopenmp")
  #  ----------------- OCL VERSION ----------------- 
  
 if (OPENCL_FOUND) 
+  message(STATUS "Adding an OpenCL version")
+
    include_directories(${OPENCL_INCLUDE_DIRS})
     add_library(${appname}-opencl  src/opencl/kernels.cpp src/opencl/common_opencl.cpp)
     target_link_libraries(${appname}-opencl   ${common_libraries} ${OPENCL_LIBRARIES})	
@@ -57,7 +61,7 @@ endif(OPENCL_FOUND)
 
  #  ----------------- CUDA VERSION ----------------- 
 if (CUDA_FOUND) 
-
+  message(STATUS "Adding a CUDA version")
 
 set(kfusion_cuda_srcs
 	src/cuda/kernels.cu
@@ -72,7 +76,8 @@ endif(CUDA_FOUND)
 
  # ----------------- PENCIL OpenCL VERSION -----------------
 
-if (PENCIL_FOUND AND OPENCL_FOUND)
+if (PENCIL_FOUND)
+  message(STATUS "Adding a PENCIL version")
   pencil_compile(kfusion_kernel_srcs
     SOURCES src/pencil/pencil_kernels.c
     OPTIONS --no-private-memory --no-shared-memory --isl-schedule-max-coefficient=1 "--opencl-include-file=${CMAKE_CURRENT_SOURCE_DIR}/src/pencil/cl_kernel_vector.cl" --no-opencl-print-kernel-types
@@ -90,7 +95,7 @@ if (PENCIL_FOUND AND OPENCL_FOUND)
   target_include_directories(${appname}-pencilCL PRIVATE ${PENCIL_INCLUDE_DIRS})
   target_link_libraries(${appname}-pencilCL ppcgKernelsHost)
   add_version(${appname} pencilCL "" "")
-endif(PENCIL_FOUND AND OPENCL_FOUND)
+endif (PENCIL_FOUND)
 
 #  ----------------- thirdparty ----------------- 
 
